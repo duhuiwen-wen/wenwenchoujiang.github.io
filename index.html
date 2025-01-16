@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小杜抽奖</title>
+    <!-- 引入Vue3 -->
+    <!-- <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script> -->
+    <!-- 引入element-plus样式文件 -->
+    <!-- <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css" /> -->
+    <!-- 引入element-plus组件库 -->
+    <!-- <script src="https://unpkg.com/element-plus"></script> -->
+    <!-- 引入axios -->
+    <!-- <script src="https://unpkg.com/axios/dist/axios.min.js"></script> -->
+    <script src="https://unpkg.com/lucky-canvas@1.7.25"></script>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle, #fff7e2, #fe7676);
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+            flex-direction: column;
+        }
+
+        #app {
+            width: 100%;
+            max-width: 400px;
+            /* 限制最大宽度以适应手机屏幕 */
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+        }
+
+        #my-lucky {
+            width: 100%;
+            height: auto;
+            /* 自动调整高度以保持比例 */
+        }
+
+        .trapezoid {
+            position: relative;
+            width: 200px;
+            /* 你可以根据需要调整宽度 */
+            height: 100px;
+            /* 你可以根据需要调整高度，但这不会影响梯形底座的形状 */
+            overflow: hidden;
+            /* 隐藏超出容器的内容 */
+        }
+
+        .trapezoid::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #fb3b3b;
+            /* 设置梯形的颜色 */
+            transform: skewY(-10deg);
+            /* 通过skewY变换来创建梯形底座 */
+            transform-origin: bottom;
+            /* 设置变换的原点在底部 */
+        }
+
+        /* 可选：为了保持内容的正常显示，可以在梯形内部添加一个额外的div */
+        .trapezoid-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform: skewY(10deg);
+            /* 与::before的skewY相反，以抵消内容的倾斜 */
+            transform-origin: bottom;
+            /* 设置变换的原点在底部 */
+            text-align: center;
+            /* 居中内容 */
+            line-height: 100px;
+            /* 设置行高以垂直居中内容 */
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 400px) {
+            #app {
+                max-width: 100%;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div id="my-lucky"></div>
+
+    </div>
+
+    <script>
+        const myLucky = new LuckyCanvas.LuckyWheel('#my-lucky', {
+            width: '350px',
+            height: '350px',
+            blocks: [
+                {
+                    padding: '30px',
+                    imgs: [{
+                        src: '/turntable-bg.png',
+                        //   width: '100%',
+                        height: '100%',
+                        top: '0px',
+                        left: '0px'
+                    }]
+                },
+                { padding: '5px', background: '#fff7e2' },
+                { padding: '5px', background: '#fe7676' },
+                // { padding: '5px', background: '#576791' },
+                // { padding: '5px', background: '#a0b0dd' },
+
+            ],
+            prizes: [
+                { background: '#fff7e2', fonts: [{ text: '歆歆', fontSize: '24px', fontColor: '#fe7676', top: '20%', }] },
+                { background: '#fe7676', fonts: [{ text: '牛内', fontSize: '24px', fontColor: '#fff7e2', top: '20%' }] },
+                { background: '#fff7e2', fonts: [{ text: '娜娜', fontSize: '24px', fontColor: '#fe7676', top: '20%' }] },
+                { background: '#fe7676', fonts: [{ text: '程雯', fontSize: '24px', fontColor: '#fff7e2', top: '20%' }] },
+                { background: '#fff7e2', fonts: [{ text: '乔妹', fontSize: '24px', fontColor: '#fe7676', top: '20%' }] },
+                { background: '#fe7676', fonts: [{ text: '零', fontSize: '24px', fontColor: '#fff7e2', top: '20%' }] },
+                { background: '#fff7e2', fonts: [{ text: '淼淼', fontSize: '24px', fontColor: '#fe7676', top: '20%' }] },
+                { background: '#fe7676', fonts: [{ text: '宋佳', fontSize: '24px', fontColor: '#fff7e2', top: '20%' }] },
+            ],
+            defaultConfig: {
+                gutter: '0px'
+            },
+            buttons: [
+                { radius: '23%', background: '#fe7676' },
+                { radius: '18%', background: '#afc8ff' },
+                {
+                    imgs: [{
+                        src: '/pointer.png', // 确保此图片路径正确，或者替换为base64编码的图片
+                        top: '-48px',
+                        width: '60px',
+                    }]
+                }
+            ],
+            start: function () {
+
+                // 开始游戏
+                myLucky.play()
+                // 生成随机数
+                function generateUniqueRandomNumbers(count, max) {
+                    const numbers = new Set();
+                    while (numbers.size < count) {
+                        const num = Math.floor(Math.random() * (max + 1));
+                        numbers.add(num);
+                    }
+                    return Array.from(numbers);
+                }
+
+                // 生成8个不重复的0到7之间的随机数
+                const uniqueRandomNumbers = generateUniqueRandomNumbers(8, 7);
+                // 生成一个0到7的随机数
+                const randomNumber = Math.floor(Math.random() * 8);
+
+                console.log(randomNumber);
+
+                console.log(uniqueRandomNumbers[randomNumber]);
+
+                setTimeout(_ => {
+                    // 停止游戏
+                    myLucky.stop(uniqueRandomNumbers[0])
+                }, 1000)
+            },
+            end: function (prize) { // 游戏停止时触发
+                console.log("prize", prize);
+                alert('恭喜！来帮我上班: ' + prize.fonts[0].text)
+            }
+        })
+    </script>
+</body>
+
+</html>
